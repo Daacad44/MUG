@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import AuthLayout from '../components/auth/AuthLayout';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { validateEmail } from '../utils/validation';
@@ -13,8 +13,13 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState('');
 
-  const successMessage = location.state?.message;
+  const [searchParams] = useSearchParams();
+  const verified = searchParams.get('verified') === 'true' || searchParams.get('type') === 'signup';
+  const successMessage = verified
+    ? 'Email verified successfully. You can now sign in.'
+    : location.state?.message;
   const from = location.state?.from?.pathname || '/dashboard';
+  const needsVerification = serverError?.toLowerCase().includes('verify your email');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +41,8 @@ export default function Login() {
       await signIn(form.email.trim(), form.password, form.rememberMe);
       navigate(from, { replace: true });
     } catch (err) {
-      setServerError(err.message || 'Invalid email or password');
+      console.error('Login error:', err);
+      setServerError(err?.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -49,7 +55,16 @@ export default function Login() {
           <div className="p-3 rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-xs">{successMessage}</div>
         )}
         {serverError && (
-          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">{serverError}</div>
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+            {serverError}
+            {needsVerification && (
+              <div className="mt-2">
+                <Link to="/verify-email" state={{ email: form.email.trim() }} className="text-[#2563EB] hover:underline">
+                  Go to email verification
+                </Link>
+              </div>
+            )}
+          </div>
         )}
 
         <div>

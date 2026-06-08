@@ -7,6 +7,7 @@ import Register from '../pages/Register';
 import Login from '../pages/Login';
 import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
+import VerifyEmail from '../pages/VerifyEmail';
 import Dashboard from '../pages/Dashboard';
 import MapExplorer from '../pages/MapExplorer';
 import GrowthAnalysis from '../pages/GrowthAnalysis';
@@ -28,6 +29,7 @@ export default function AppRoutes() {
       />
       <Route path="/register" element={<GuestRoute redirectIfAuth><Register /></GuestRoute>} />
       <Route path="/login" element={<GuestRoute redirectIfAuth><Login /></GuestRoute>} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/about" element={<About />} />

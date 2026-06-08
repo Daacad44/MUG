@@ -41,8 +41,23 @@ export const authService = {
       return { user: session.user, session };
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    if (error) {
+      console.error('Supabase signIn error:', error);
+      const message = error.message?.toLowerCase().includes('email not confirmed')
+        ? 'Please verify your email address first.'
+        : error.message || 'Invalid email or password';
+      throw new Error(message);
+    }
+
+    if (data.user && !data.user.email_confirmed_at) {
+      throw new Error('Please verify your email address first.');
+    }
+
     return data;
   },
 
@@ -69,6 +84,7 @@ export const authService = {
         data: {
           full_name: fullName.trim(),
         },
+        emailRedirectTo: `${window.location.origin}/login`,
       },
     });
 
@@ -87,6 +103,27 @@ export const authService = {
     }
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+  },
+
+  resendVerification: async (email) => {
+    if (!isSupabaseConfigured) {
+      return { message: 'Verification email sent (demo mode)' };
+    }
+
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email.trim(),
+      options: {
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
+    });
+
+    if (error) {
+      console.error('Supabase resend verification error:', error);
+      throw new Error(error.message || 'Failed to resend verification email');
+    }
+
+    return { message: 'Verification email sent. Please check your inbox.' };
   },
 
   forgotPassword: async (email) => {

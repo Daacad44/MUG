@@ -39,7 +39,12 @@ export function AuthProvider({ children }) {
   };
 
   const signUp = async (fullName, email, password) => {
-    return authService.signUp(fullName, email, password);
+    const data = await authService.signUp(fullName, email, password);
+    if (data?.session) {
+      setUser(data.user);
+      setSession(data.session);
+    }
+    return data;
   };
 
   const signOut = async () => {

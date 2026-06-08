@@ -37,8 +37,16 @@ export default function Register() {
     setErrors({});
     setLoading(true);
     try {
-      await signUp(form.fullName.trim(), form.email.trim(), form.password);
-      navigate('/login', { state: { message: 'Registration successful. Please sign in.' } });
+      const data = await signUp(form.fullName.trim(), form.email.trim(), form.password);
+
+      if (data?.session) {
+        navigate('/dashboard', { replace: true });
+      } else {
+        navigate('/verify-email', {
+          state: { email: form.email.trim() },
+          replace: true,
+        });
+      }
     } catch (err) {
       console.error('Registration error:', err);
       setServerError(err?.message || err?.error_description || 'Registration failed');
