@@ -63,11 +63,20 @@ export const authService = {
     }
 
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: {
+          full_name: fullName.trim(),
+        },
+      },
     });
-    if (error) throw error;
+
+    if (error) {
+      console.error('Supabase signUp error:', error);
+      throw new Error(error.message || 'Registration failed');
+    }
+
     return data;
   },
 

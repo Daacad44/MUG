@@ -40,7 +40,8 @@ export default function Register() {
       await signUp(form.fullName.trim(), form.email.trim(), form.password);
       navigate('/login', { state: { message: 'Registration successful. Please sign in.' } });
     } catch (err) {
-      setServerError(err.message || 'Registration failed');
+      console.error('Registration error:', err);
+      setServerError(err?.message || err?.error_description || 'Registration failed');
     } finally {
       setLoading(false);
     }
