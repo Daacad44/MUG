@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
   LineChart,
   Clock,
@@ -25,11 +25,10 @@ const sidebarItems = [
 
 export default function LeftSidebar() {
   const { signOut } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await signOut();
-    navigate('/');
+    window.location.replace('/');
   };
 
   return (
