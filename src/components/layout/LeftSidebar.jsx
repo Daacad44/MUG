@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LineChart,
   Clock,
@@ -7,7 +7,9 @@ import {
   GitCompare,
   Download,
   FileText,
+  LogOut,
 } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth.jsx';
 import { LAST_UPDATED } from '../../utils/mockData';
 import SomaliaMapWidget from '../dashboard/SomaliaMapWidget';
 
@@ -22,6 +24,14 @@ const sidebarItems = [
 ];
 
 export default function LeftSidebar() {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return (
     <aside className="w-[200px] shrink-0 flex flex-col border-r border-[#1e293b] bg-[#0B1120] overflow-y-auto">
       <div className="p-3">
@@ -66,6 +76,15 @@ export default function LeftSidebar() {
           </div>
           <div className="text-[11px] text-[#94a3b8]">{LAST_UPDATED}</div>
         </div>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[#64748b] border border-[#1e293b] hover:bg-[#111827] hover:text-red-400 transition-colors"
+        >
+          <LogOut className="w-3.5 h-3.5 shrink-0" />
+          Logout
+        </button>
       </div>
     </aside>
   );
